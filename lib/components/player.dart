@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:example/components/collision_block.dart';
 import 'package:example/components/custom_hitbox.dart';
+import 'package:example/components/door.dart';
 import 'package:example/components/dungeon_key.dart';
+import 'package:example/components/lever.dart';
 import 'package:example/components/spider.dart';
 import 'package:example/components/trap.dart';
 import 'package:example/components/utils.dart';
@@ -34,6 +36,8 @@ class Player extends SpriteAnimationGroupComponent
   List<PositionComponent> collisionBlocks = [];
   double horizontalMovement = 0;
   double verticalMovement = 0;
+
+  Set<Lever> collidingLevers = <Lever>{};
 
   @override
   FutureOr<void> onLoad() {
@@ -102,6 +106,23 @@ class Player extends SpriteAnimationGroupComponent
       // collision normal by separation distance.
       position += collisionNormal.scaled(separationDistance);
     }
+    if (other is Lever) {
+      final lever = other;
+      // Only toggle if this lever hasn't been collided with yet
+      if (!collidingLevers.contains(lever)) {
+        collidingLevers.add(lever);
+        lever.toggle();
+        print('Lever ${lever.id} toggled. New state: ${lever.isActive}');
+      }
+    }
+
+    if (other is Door) {
+      final door = other;
+      if (door.isOpened) {
+        _reachedCheckpoint();
+        return;
+      }
+    }
     if (other is DungeonKey) {
       other.removeFromParent();
       game.keysCollected += 1;
@@ -120,6 +141,15 @@ class Player extends SpriteAnimationGroupComponent
     }
 
     super.onCollision(intersectionPoints, other);
+  }
+
+  @override
+  void onCollisionEnd(PositionComponent other) {
+    if (other is Lever) {
+      // Remove the lever from the colliding set when collision ends
+      collidingLevers.remove(other);
+    }
+    super.onCollisionEnd(other);
   }
 
   // void _checkCollisions() {
@@ -195,5 +225,13 @@ class Player extends SpriteAnimationGroupComponent
 
   void _respawn() {
     position = startingPosition;
+  }
+
+  void _reachedCheckpoint() {
+    position = Vector2.all(-640);
+    const waitToChangeDuration = Duration(seconds: 1);
+    Future.delayed(waitToChangeDuration, () {
+      game.loadNextLevel();
+    });
   }
 }

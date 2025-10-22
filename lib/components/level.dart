@@ -1,17 +1,20 @@
 import 'dart:async';
 
 import 'package:example/components/collision_block.dart';
+import 'package:example/components/door.dart';
 import 'package:example/components/dungeon_key.dart';
+import 'package:example/components/lever.dart';
 import 'package:example/components/player.dart';
 import 'package:example/components/spider.dart';
 import 'package:example/components/trap.dart';
+import 'package:example/example_game.dart';
 
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
-class Level extends World {
+class Level extends World with HasGameReference<ExampleGame> {
   final String levelName;
   final Player player;
   late TiledComponent level;
@@ -70,6 +73,26 @@ class Level extends World {
             size: Vector2(16, 16),
           );
           add(trap);
+          break;
+
+        case 'Door':
+          final leverId = spawnPoint.properties.getValue('lever_id') as String?;
+          final door = Door(
+            leverId: leverId,
+            position: Vector2(spawnPoint.x, spawnPoint.y),
+            size: Vector2(16, 16),
+          );
+          game.doors.add(door);
+          add(door);
+          break;
+        case 'Lever':
+          final leverId = spawnPoint.properties.getValue('id') as String?;
+          final lever = Lever(
+            id: leverId,
+            position: Vector2(spawnPoint.x, spawnPoint.y),
+            size: Vector2(16, 16),
+          );
+          add(lever);
           break;
       }
     }

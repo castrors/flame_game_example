@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:example/components/door.dart';
 import 'package:example/components/player.dart';
 import 'package:example/components/level.dart';
 import 'package:flame/components.dart';
@@ -14,9 +15,12 @@ import 'package:flutter/widgets.dart';
 class ExampleGame extends FlameGame with KeyboardEvents, HasCollisionDetection
 // , DragCallbacks
 {
-  late final CameraComponent cameraComponent;
+  late CameraComponent cameraComponent;
   Player player = Player();
   late JoystickComponent joystick;
+  List<String> levelNames = ['level-01.tmx', 'level-01.tmx'];
+  int currentLevelIndex = 0;
+  Set<Door> doors = {};
 
   int keysCollected = 0;
 
@@ -25,16 +29,7 @@ class ExampleGame extends FlameGame with KeyboardEvents, HasCollisionDetection
     // debugMode = true;
     await images.loadAllImages();
 
-    final world = Level(levelName: 'level-01.tmx', player: player);
-
-    cameraComponent = CameraComponent.withFixedResolution(
-      world: world,
-      width: 480,
-      height: 320,
-    );
-    cameraComponent.viewfinder.anchor = Anchor.topLeft;
-
-    addAll([cameraComponent, world]);
+    _loadLevel();
     // addJoystick();
 
     return super.onLoad();
@@ -63,6 +58,48 @@ class ExampleGame extends FlameGame with KeyboardEvents, HasCollisionDetection
     }
 
     return KeyEventResult.handled;
+  }
+
+  // Add this method to your ExampleGame class
+  void toggleDoor(String? leverId) {
+    if (leverId == null) return;
+
+    // Find the door with matching leverId and toggle it
+    for (final door in doors) {
+      if (door.leverId == leverId) {
+        door.toggle();
+        break;
+      }
+    }
+  }
+
+  void loadNextLevel() {
+    removeWhere((component) => component is Level);
+    doors.clear();
+    if (currentLevelIndex < levelNames.length - 1) {
+      currentLevelIndex++;
+      _loadLevel();
+    } else {
+      // no more levels
+    }
+  }
+
+  void _loadLevel() {
+    Future.delayed(const Duration(seconds: 2), () {
+      Level world = Level(
+        levelName: levelNames[currentLevelIndex],
+        player: player,
+      );
+
+      cameraComponent = CameraComponent.withFixedResolution(
+        world: world,
+        width: 480,
+        height: 320,
+      );
+      cameraComponent.viewfinder.anchor = Anchor.topLeft;
+
+      addAll([cameraComponent, world]);
+    });
   }
 
   // @override
