@@ -1,18 +1,15 @@
 import 'dart:async';
 
 import 'package:example/components/collision_block.dart';
-import 'package:example/components/custom_hitbox.dart';
 import 'package:example/components/door.dart';
 import 'package:example/components/dungeon_key.dart';
 import 'package:example/components/lever.dart';
 import 'package:example/components/spider.dart';
 import 'package:example/components/trap.dart';
-import 'package:example/components/utils.dart';
 import 'package:example/example_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:flutter/services.dart';
 
 enum PlayerState { idle, runningLeft, runningRight, runningUp, runningDown }
 

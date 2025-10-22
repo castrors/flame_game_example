@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:example/components/door.dart';
 import 'package:example/components/player.dart';
