@@ -9,7 +9,9 @@ import 'package:example/components/trap.dart';
 import 'package:example/example_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 enum PlayerState { idle, runningLeft, runningRight, runningUp, runningDown }
 
@@ -221,14 +223,19 @@ class Player extends SpriteAnimationGroupComponent
   }
 
   void _respawn() {
+    if (game.playSounds) {
+      FlameAudio.play('hitHurt.wav', volume: game.soundVolume);
+    }
+
     position = startingPosition;
   }
 
   void _reachedCheckpoint() {
+    if (game.playSounds) {
+      FlameAudio.play('finishLevel.wav', volume: game.soundVolume);
+    }
     position = Vector2.all(-640);
     const waitToChangeDuration = Duration(seconds: 1);
-    Future.delayed(waitToChangeDuration, () {
-      game.loadNextLevel();
-    });
+    Future.delayed(waitToChangeDuration, () => game.loadNextLevel());
   }
 }

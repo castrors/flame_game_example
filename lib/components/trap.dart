@@ -4,6 +4,7 @@ import 'package:example/components/custom_hitbox.dart';
 import 'package:example/example_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 enum TrapState { on, off }
 
@@ -53,6 +54,9 @@ class Trap extends SpriteGroupComponent<TrapState>
     // Toggle every five second
     if (_timer >= duration) {
       isActive = !isActive;
+      if (game.playSounds) {
+        FlameAudio.play('trapMovement.wav', volume: game.soundVolume);
+      }
       _timer = 0.0; // Reset timer
     }
 

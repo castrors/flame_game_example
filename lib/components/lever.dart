@@ -4,6 +4,7 @@ import 'package:example/components/custom_hitbox.dart';
 import 'package:example/example_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 enum LeverState { opened, closed }
 
@@ -55,6 +56,9 @@ class Lever extends SpriteGroupComponent<LeverState>
   }
 
   void toggle() {
+    if (game.playSounds) {
+      FlameAudio.play('useLever.wav', volume: game.soundVolume);
+    }
     isActive = !isActive;
     game.toggleDoor(id);
   }

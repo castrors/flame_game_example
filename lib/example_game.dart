@@ -20,6 +20,8 @@ class ExampleGame extends FlameGame with KeyboardEvents, HasCollisionDetection
   List<String> levelNames = ['level-01.tmx', 'level-01.tmx'];
   int currentLevelIndex = 0;
   Set<Door> doors = {};
+  bool playSounds = true;
+  double soundVolume = 1.0;
 
   int keysCollected = 0;
 
@@ -79,7 +81,9 @@ class ExampleGame extends FlameGame with KeyboardEvents, HasCollisionDetection
       currentLevelIndex++;
       _loadLevel();
     } else {
-      // no more levels
+      // Optionally, you can reset to the first level or handle game completion here
+      currentLevelIndex = 0;
+      _loadLevel();
     }
   }
 
